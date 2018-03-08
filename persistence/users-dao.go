@@ -18,7 +18,7 @@ func InsertNewUser(user *models.User) error {
 	user.Password = passwordHash
 	fmt.Println("Insert new user:", user)
 
-	database := getArangoDatabase()
+	database := *getArangoDatabase()
 	query := "FOR u IN users FILTER LOWER(u.Email) == LOWER(@email) OR LOWER(u.Username) == LOWER(@username) RETURN u"
 	bindings := bindingVariables{
 		"email":    user.Email,
@@ -55,7 +55,7 @@ func InsertNewUser(user *models.User) error {
 func GetUserByEmail(email string) (*models.User, error) {
 	fmt.Println("Get user by email:", email)
 
-	database := getArangoDatabase()
+	database := *getArangoDatabase()
 	query := "FOR u IN users FILTER LOWER(u.Email) == LOWER(@email) RETURN u"
 	bindings := bindingVariables{
 		"email": email,

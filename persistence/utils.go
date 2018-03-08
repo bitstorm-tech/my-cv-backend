@@ -14,7 +14,7 @@ var arangoClient driver.Client
 var arangoDatabase driver.Database
 var arangoCollections map[string]driver.Collection
 
-func getArangoClient() driver.Client {
+func getArangoClient() *driver.Client {
 	if arangoClient == nil {
 		fmt.Println("Initializing ArangoDB client")
 		endpoint := "http://localhost:8529"
@@ -41,29 +41,29 @@ func getArangoClient() driver.Client {
 		}
 	}
 
-	return arangoClient
+	return &arangoClient
 }
 
-func getArangoDatabase() driver.Database {
+func getArangoDatabase() *driver.Database {
 	if arangoDatabase == nil {
 		fmt.Println("Initializing ArangoDB database")
 		client := getArangoClient()
 		var err error
-		arangoDatabase, err = client.Database(nil, "my-cv")
+		arangoDatabase, err = (*client).Database(nil, "my-cv")
 		if err != nil {
 			fmt.Println("ERROR: can't get database:", err)
 			os.Exit(1)
 		}
 	}
 
-	return arangoDatabase
+	return &arangoDatabase
 }
 
-func getArangoCollection(name string) driver.Collection {
+func getArangoCollection(name string) *driver.Collection {
 	if arangoCollections[name] == nil {
 		fmt.Println("Initialize ArangoDB collection:", name)
 		database := getArangoDatabase()
-		collection, err := database.Collection(nil, name)
+		collection, err := (*database).Collection(nil, name)
 		if err != nil {
 			fmt.Println("ERROR: can't get collection", name, err)
 			os.Exit(1)
@@ -71,5 +71,6 @@ func getArangoCollection(name string) driver.Collection {
 		arangoCollections[name] = collection
 	}
 
-	return arangoCollections[name]
+	col := arangoCollections[name]
+	return &col
 }

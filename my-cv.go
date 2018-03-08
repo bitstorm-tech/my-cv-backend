@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	"my-cv-backend/resources"
 	"net/http"
 
+	"github.com/bugjoe/my-cv-backend/resources"
 	"github.com/gorilla/handlers"
-
 	"github.com/gorilla/mux"
 )
 

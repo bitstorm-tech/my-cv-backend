@@ -2,8 +2,9 @@ package persistence
 
 import (
 	"errors"
-	"fleet-commander-backend-go/models"
 	"fmt"
+
+	"github.com/bugjoe/fleet-commander-backend-go/models"
 )
 
 // InsertNewUser inserts a new user. When either the Username or the Email of the

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/bugjoe/fleet-commander-backend-go/models"
+	"github.com/bugjoe/my-cv-backend/models"
 )
 
 // InsertNewUser inserts a new user. When either the Username or the Email of the
@@ -20,10 +20,9 @@ func InsertNewUser(user *models.User) error {
 	fmt.Println("Insert new user:", user)
 
 	database := *getArangoDatabase()
-	query := "FOR u IN users FILTER LOWER(u.Email) == LOWER(@email) OR LOWER(u.Username) == LOWER(@username) RETURN u"
+	query := "FOR u IN users FILTER LOWER(u.Email) == LOWER(@email) RETURN u"
 	bindings := bindingVariables{
-		"email":    user.Email,
-		"username": user.Username,
+		"email": user.Email,
 	}
 
 	cursor, err := database.Query(nil, query, bindings)
@@ -34,7 +33,7 @@ func InsertNewUser(user *models.User) error {
 
 	if cursor.HasMore() {
 		fmt.Println("WARN: user already exists")
-		return fmt.Errorf("User with username=%s or email=%s already exists", user.Username, user.Email)
+		return fmt.Errorf("User email=%s already exists", user.Email)
 	}
 
 	collection, err := database.Collection(nil, "users")

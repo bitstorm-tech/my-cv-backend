@@ -1,9 +1,10 @@
 package resources
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/bugjoe/my-cv-backend/persistence"
 
 	"github.com/bugjoe/my-cv-backend/models"
 )
@@ -18,8 +19,13 @@ func CreateAccountHandler(response http.ResponseWriter, request *http.Request) {
 	}
 
 	log.Println("Create account with email:", account.Email)
+	if persistence.InsertNewAccount(account) != nil {
+		log.Println("ERROR: Can't create new account:", err)
+		http.Error(response, "Error while creating new account", 500)
+		return
+	}
 
-	response.Write([]byte(fmt.Sprintf("Create account with email: %s", account.Email)))
+	response.WriteHeader(200)
 }
 
 // GetAccountHandler handles get requests for accounts

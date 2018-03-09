@@ -1,10 +1,14 @@
 package persistence
 
 import (
+	"errors"
 	"log"
 
 	"github.com/bugjoe/my-cv-backend/models"
 )
+
+// ErrAccountAlreadyExists is returned when an account already exists in the database
+var ErrAccountAlreadyExists = errors.New("User already Exists")
 
 // InsertNewAccount inserts a new account. When either the Email of the
 // account already exists, the functions returns an error
@@ -29,7 +33,7 @@ func InsertNewAccount(account *models.Account) error {
 	}
 
 	if cursor.HasMore() {
-		return err
+		return ErrAccountAlreadyExists
 	}
 
 	collection, err := database.Collection(nil, "accounts")

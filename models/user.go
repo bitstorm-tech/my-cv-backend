@@ -15,29 +15,27 @@ type User struct {
 }
 
 // GetPasswordHash returns the user password as hex encoded SHA-512 hash string
-func (user *User) GetPasswordHash() string {
+func (user *User) GetPasswordHash() (string, error) {
 	sha := crypto.SHA512.New()
 	_, err := sha.Write([]byte(user.Password))
 	if err != nil {
-		return ""
+		return "", err
 	}
 	hash := sha.Sum(nil)
 
-	return fmt.Sprintf("%x", hash)
+	return fmt.Sprintf("%x", hash), nil
 }
 
 // UserFromRequest extracts the user from a request
 func UserFromRequest(r *http.Request) (*User, error) {
-	b, err := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println("ERROR: can't read request body", err)
 		return nil, err
 	}
 
 	user := new(User)
-	err = json.Unmarshal(b, user)
+	err = json.Unmarshal(body, user)
 	if err != nil {
-		fmt.Println("ERROR: can't unmarshal request body:", string(b), err)
 		return nil, err
 	}
 

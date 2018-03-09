@@ -2,6 +2,7 @@ package resources
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/bugjoe/my-cv-backend/models"
@@ -9,13 +10,14 @@ import (
 
 // UserCreateHandler handles user create requests
 func UserCreateHandler(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("UserCreateHandler")
 	user, err := models.UserFromRequest(request)
 	if err != nil {
-		fmt.Println("ERROR: Can't extract user from request")
+		log.Println("ERROR: Can't extract user from request:", err)
+		http.Error(response, "Error while parsing request body", 500)
+		return
 	}
 
-	fmt.Println("Create user with email:", user.Email)
+	log.Println("Create user with email:", user.Email)
 
 	response.Write([]byte(fmt.Sprintf("Create user with email: %s", user.Email)))
 }

@@ -1,8 +1,7 @@
 package persistence
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	driver "github.com/arangodb/go-driver"
 	"github.com/arangodb/go-driver/http"
@@ -16,7 +15,7 @@ var arangoCollections map[string]driver.Collection
 
 func getArangoClient() *driver.Client {
 	if arangoClient == nil {
-		fmt.Println("Initializing ArangoDB client")
+		log.Println("Initializing ArangoDB client")
 		endpoint := "http://localhost:8529"
 
 		connectionConfig := http.ConnectionConfig{
@@ -25,8 +24,7 @@ func getArangoClient() *driver.Client {
 
 		connection, err := http.NewConnection(connectionConfig)
 		if err != nil {
-			fmt.Println("ERROR: can't create connection:", err)
-			os.Exit(1)
+			log.Fatalln("ERROR: can't create connection:", err)
 		}
 
 		clientConfig := driver.ClientConfig{
@@ -36,8 +34,7 @@ func getArangoClient() *driver.Client {
 
 		arangoClient, err = driver.NewClient(clientConfig)
 		if err != nil {
-			fmt.Println("ERROR: can't create ArangoDB client:", err)
-			os.Exit(1)
+			log.Fatalln("ERROR: can't create ArangoDB client:", err)
 		}
 	}
 
@@ -46,13 +43,12 @@ func getArangoClient() *driver.Client {
 
 func getArangoDatabase() *driver.Database {
 	if arangoDatabase == nil {
-		fmt.Println("Initializing ArangoDB database")
+		log.Println("Initializing ArangoDB database")
 		client := getArangoClient()
 		var err error
 		arangoDatabase, err = (*client).Database(nil, "my-cv")
 		if err != nil {
-			fmt.Println("ERROR: can't get database:", err)
-			os.Exit(1)
+			log.Fatalln("ERROR: can't get database:", err)
 		}
 	}
 
@@ -61,12 +57,11 @@ func getArangoDatabase() *driver.Database {
 
 func getArangoCollection(name string) *driver.Collection {
 	if arangoCollections[name] == nil {
-		fmt.Println("Initialize ArangoDB collection:", name)
+		log.Println("Initialize ArangoDB collection:", name)
 		database := getArangoDatabase()
 		collection, err := (*database).Collection(nil, name)
 		if err != nil {
-			fmt.Println("ERROR: can't get collection", name, err)
-			os.Exit(1)
+			log.Fatalln("ERROR: can't get collection", name, err)
 		}
 		arangoCollections[name] = collection
 	}

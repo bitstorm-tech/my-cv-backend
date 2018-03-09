@@ -12,8 +12,8 @@ import (
 func main() {
 	log.Println("Start My-CV server")
 	router := mux.NewRouter()
-	router.HandleFunc("/users", resources.UserCreateHandler).Methods("PUT")
-	router.HandleFunc("/users", resources.UserGetHandler).Methods("GET")
+	router.HandleFunc("/accounts", resources.CreateAccountHandler).Methods("PUT")
+	router.HandleFunc("/accounts", resources.GetAccountHandler).Methods("GET")
 	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "PUT", "HEAD", "DELETE"})
 	allowedHeaders := handlers.AllowedHeaders([]string{"x-requested-with", "authorization", "content-type"})
 	corsEnabledRouter := handlers.CORS(allowedMethods, allowedHeaders)(router)

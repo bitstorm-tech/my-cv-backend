@@ -13,7 +13,7 @@ var arangoClient driver.Client
 var arangoDatabase driver.Database
 var arangoCollections map[string]driver.Collection
 
-func getArangoClient() *driver.Client {
+func getArangoClient() (driver.Client, error) {
 	if arangoClient == nil {
 		log.Println("Initializing ArangoDB client")
 		endpoint := "http://localhost:8529"
@@ -24,7 +24,7 @@ func getArangoClient() *driver.Client {
 
 		connection, err := http.NewConnection(connectionConfig)
 		if err != nil {
-			log.Fatalln("ERROR: can't create connection:", err)
+			return nil, err
 		}
 
 		clientConfig := driver.ClientConfig{
@@ -34,38 +34,46 @@ func getArangoClient() *driver.Client {
 
 		arangoClient, err = driver.NewClient(clientConfig)
 		if err != nil {
-			log.Fatalln("ERROR: can't create ArangoDB client:", err)
+			return nil, err
 		}
 	}
 
-	return &arangoClient
+	return arangoClient, nil
 }
 
-func getArangoDatabase() *driver.Database {
+func getArangoDatabase() (driver.Database, error) {
 	if arangoDatabase == nil {
 		log.Println("Initializing ArangoDB database")
-		client := getArangoClient()
-		var err error
-		arangoDatabase, err = (*client).Database(nil, "my-cv")
+		client, err := getArangoClient()
 		if err != nil {
-			log.Fatalln("ERROR: can't get database:", err)
+			return nil, err
 		}
+
+		database, err := client.Database(nil, "my-cv")
+		if err != nil {
+			return nil, err
+		}
+
+		arangoDatabase = database
 	}
 
-	return &arangoDatabase
+	return arangoDatabase, nil
 }
 
-func getArangoCollection(name string) *driver.Collection {
+func getArangoCollection(name string) (driver.Collection, error) {
 	if arangoCollections[name] == nil {
 		log.Println("Initialize ArangoDB collection:", name)
-		database := getArangoDatabase()
-		collection, err := (*database).Collection(nil, name)
+		database, err := getArangoDatabase()
 		if err != nil {
-			log.Fatalln("ERROR: can't get collection", name, err)
+			return nil, err
+		}
+
+		collection, err := database.Collection(nil, name)
+		if err != nil {
+			return nil, err
 		}
 		arangoCollections[name] = collection
 	}
 
-	col := arangoCollections[name]
-	return &col
+	return arangoCollections[name], nil
 }

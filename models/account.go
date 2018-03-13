@@ -10,8 +10,9 @@ import (
 
 // Account represents a user account
 type Account struct {
-	Email    string
-	Password string
+	ID       string `json:"id"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 // GetPasswordHash returns the account password as hex encoded SHA-512 hash string

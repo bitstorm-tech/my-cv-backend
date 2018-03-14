@@ -11,7 +11,7 @@ type bindingVariables map[string]interface{}
 
 var arangoClient driver.Client
 var arangoDatabase driver.Database
-var arangoCollections map[string]driver.Collection
+var arangoCollections = make(map[string]driver.Collection)
 
 func getArangoClient() (driver.Client, error) {
 	if arangoClient == nil {

@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
+
 	"github.com/dgrijalva/jwt-go"
 
 	"github.com/bugjoe/my-cv-backend/persistence"
@@ -39,7 +41,25 @@ func CreateAccountHandler(response http.ResponseWriter, request *http.Request) {
 
 // GetAccountHandler handles get requests for accounts
 func GetAccountHandler(response http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+	email := vars["email"]
+	account, err := persistence.GetAccountByEmail(email)
+	if err != nil {
+		log.Printf("ERROR: Can't get account with email=%s from database: %v\n", email, err)
+		http.Error(response, "Error while getting account from database", 500)
+		return
+	}
 
+	account.Payload.Password = ""
+
+	json, err := account.ToJSON()
+	if err != nil {
+		log.Printf("ERROR: Can't create with email=%s to a JSON object: %v\n", email, err)
+		http.Error(response, "Error while create JSON", 500)
+		return
+	}
+
+	response.Write(json)
 }
 
 // LoginHandler handles login requests. If the login is successfull, it will
@@ -54,7 +74,7 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 
 	accountFromDb, err := persistence.GetAccountByEmail(account.Payload.Email)
 	if err != nil {
-		log.Println("ERROR: Can't get account from database", err)
+		log.Printf("ERROR: Can't get account with email=%s from database: %v\n", account.Payload.Email, err)
 		http.Error(response, "Error while getting account from database", 500)
 		return
 	}

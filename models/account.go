@@ -14,7 +14,7 @@ type Account struct {
 	Payload struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
-	}
+	} `json:"payload"`
 }
 
 // GetPasswordHash returns the account password as hex encoded SHA-512 hash string
@@ -27,6 +27,16 @@ func (account *Account) GetPasswordHash() (string, error) {
 	hash := sha.Sum(nil)
 
 	return fmt.Sprintf("%x", hash), nil
+}
+
+// ToJSON converts an Account to a JSON []byte
+func (account *Account) ToJSON() ([]byte, error) {
+	json, err := json.Marshal(account)
+	if err != nil {
+		return nil, err
+	}
+
+	return json, nil
 }
 
 // ExtractAccountFromRequest extracts the account from a request

@@ -13,7 +13,7 @@ func main() {
 	log.Println("Start My-CV server")
 	router := mux.NewRouter()
 	router.HandleFunc("/accounts", resources.CreateAccountHandler).Methods("PUT")
-	router.HandleFunc("/accounts", resources.GetAccountHandler).Methods("GET")
+	router.HandleFunc("/accounts/{email}", resources.GetAccountHandler).Methods("GET")
 	router.HandleFunc("/profiles", resources.UpsertProfileHandler).Methods("PUT")
 	router.HandleFunc("/login", resources.LoginHandler).Methods("POST")
 	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "PUT", "HEAD", "DELETE"})

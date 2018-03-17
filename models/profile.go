@@ -35,7 +35,7 @@ func ExtractProfileFromRequest(r *http.Request) (*Profile, error) {
 	return profile, nil
 }
 
-// ToJSON converts a profile to a JSON []byte
+// ToJSON converts a Profile to a JSON []byte
 func (profile Profile) ToJSON() ([]byte, error) {
 	json, err := json.Marshal(profile)
 	if err != nil {

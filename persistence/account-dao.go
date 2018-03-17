@@ -18,7 +18,7 @@ func InsertNewAccount(account *models.Account) error {
 		return err
 	}
 
-	account.Password = passwordHash
+	account.Payload.Password = passwordHash
 	log.Println("Insert new account:", account)
 
 	database, err := getArangoDatabase()
@@ -28,7 +28,7 @@ func InsertNewAccount(account *models.Account) error {
 
 	query := "FOR acc IN accounts FILTER LOWER(acc.Email) == LOWER(@email) RETURN acc"
 	bindings := bindingVariables{
-		"email": account.Email,
+		"email": account.Payload.Email,
 	}
 
 	cursor, err := database.Query(nil, query, bindings)
@@ -45,7 +45,7 @@ func InsertNewAccount(account *models.Account) error {
 		return err
 	}
 
-	_, err = collection.CreateDocument(nil, account)
+	_, err = collection.CreateDocument(nil, account.Payload)
 	if err != nil {
 		return err
 	}
@@ -72,10 +72,12 @@ func GetAccountByEmail(email string) (*models.Account, error) {
 	}
 
 	account := new(models.Account)
-	_, err = cursor.ReadDocument(nil, account)
+	meta, err := cursor.ReadDocument(nil, account.Payload)
 	if err != nil {
 		return nil, err
 	}
+
+	account.ID = meta.Key
 
 	if cursor.HasMore() {
 		log.Printf("ERROR: found multiple accounts with email %s, will use first one\n", email)

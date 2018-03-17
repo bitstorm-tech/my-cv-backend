@@ -8,13 +8,15 @@ import (
 
 // Profile contains all the main data like title, name, birthday and so on
 type Profile struct {
-	ID            string `json:"id"`
-	Title         string `json:"title"`
-	AcademicTitle string `json:"academicTitle"`
-	FirstName     string `json:"firstName"`
-	LastName      string `json:"lastName"`
-	Birthday      string `json:"birthday"`
-	Nationality   string `json:"nationality"`
+	ID      string `json:"id"`
+	Payload struct {
+		Title         string `json:"title"`
+		AcademicTitle string `json:"academicTitle"`
+		FirstName     string `json:"firstName"`
+		LastName      string `json:"lastName"`
+		Birthday      string `json:"birthday"`
+		Nationality   string `json:"nationality"`
+	} `json:"payload"`
 }
 
 // ExtractProfileFromRequest extracts the profile from a request

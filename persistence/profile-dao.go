@@ -15,9 +15,9 @@ func UpsertProfile(profile *models.Profile) (*models.Profile, error) {
 	var meta driver.DocumentMeta
 
 	if len(profile.ID) > 0 {
-		_, err = collection.ReplaceDocument(nil, profile.ID, profile)
+		_, err = collection.ReplaceDocument(nil, profile.ID, profile.Payload)
 	} else {
-		meta, err = collection.CreateDocument(nil, profile)
+		meta, err = collection.CreateDocument(nil, profile.Payload)
 		profile.ID = meta.Key
 	}
 

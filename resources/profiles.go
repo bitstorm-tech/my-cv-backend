@@ -1,6 +1,7 @@
 package resources
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/bugjoe/my-cv-backend/persistence"
@@ -18,12 +19,14 @@ func UpsertProfileHandler(response http.ResponseWriter, request *http.Request) {
 
 	profile, err = persistence.UpsertProfile(profile)
 	if err != nil {
+		log.Println("ERROR:", err)
 		http.Error(response, "Error wile upserting profile", 500)
 		return
 	}
 
 	json, err := profile.ToJSON()
 	if err != nil {
+		log.Println("ERROR:", err)
 		http.Error(response, "Error while create JSON", 500)
 		return
 	}

@@ -10,15 +10,17 @@ import (
 
 // Account represents a user account
 type Account struct {
-	ID       string `json:"id"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	ID      string `json:"id"`
+	Payload struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
 }
 
 // GetPasswordHash returns the account password as hex encoded SHA-512 hash string
 func (account *Account) GetPasswordHash() (string, error) {
 	sha := crypto.SHA512.New()
-	_, err := sha.Write([]byte(account.Password))
+	_, err := sha.Write([]byte(account.Payload.Password))
 	if err != nil {
 		return "", err
 	}

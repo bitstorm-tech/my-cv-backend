@@ -18,7 +18,7 @@ func InsertNewAccount(account *models.Account) error {
 		return err
 	}
 
-	account.Password = passwordHash
+	account.Payload.Password = passwordHash
 	log.Println("Insert new account:", account)
 
 	database, err := getArangoDatabase()
@@ -28,7 +28,7 @@ func InsertNewAccount(account *models.Account) error {
 
 	query := "FOR acc IN accounts FILTER LOWER(acc.Email) == LOWER(@email) RETURN acc"
 	bindings := bindingVariables{
-		"email": account.Email,
+		"email": account.Payload.Email,
 	}
 
 	cursor, err := database.Query(nil, query, bindings)

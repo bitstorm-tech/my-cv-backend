@@ -18,7 +18,7 @@ func CreateAccountHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	log.Println("Create account with email:", account.Email)
+	log.Println("Create account with email:", account.Payload.Email)
 	err = persistence.InsertNewAccount(account)
 	if err != nil {
 		log.Println("ERROR: Can't create new account:", err)

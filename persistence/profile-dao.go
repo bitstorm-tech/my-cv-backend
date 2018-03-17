@@ -14,13 +14,28 @@ func UpsertProfile(profile *models.Profile) (*models.Profile, error) {
 
 	var meta driver.DocumentMeta
 
-	if len(profile.ID) > 0 {
-		_, err = collection.ReplaceDocument(nil, profile.ID, profile.Payload)
+	if len(profile.Key) > 0 {
+		_, err = collection.ReplaceDocument(nil, profile.Key, profile.Payload)
 	} else {
 		meta, err = collection.CreateDocument(nil, profile.Payload)
-		profile.ID = meta.Key
+		profile.Key = meta.Key
 	}
 
+	if err != nil {
+		return nil, err
+	}
+
+	edges, err := getArangoEdgeCollection("has")
+	if err != nil {
+		return nil, err
+	}
+
+	edgeDocument := driver.EdgeDocument{
+		From: driver.NewDocumentID("accounts", profile.AccountKey),
+		To:   profile.GetID(),
+	}
+
+	_, err = edges.CreateDocument(nil, edgeDocument)
 	if err != nil {
 		return nil, err
 	}

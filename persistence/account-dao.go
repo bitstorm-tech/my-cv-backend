@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 
+	driver "github.com/arangodb/go-driver"
 	"github.com/bugjoe/my-cv-backend/models"
 )
 
@@ -70,25 +71,44 @@ func GetAccountByEmail(email string) (*models.Account, error) {
 
 	cursor, err := database.Query(nil, query, bindings)
 	if err != nil {
-		// log.Printf("Account with email=%s not found: %v", email, err)
-		// return nil, ErrAccountNotFound
 		return nil, err
 	}
+
+	defer cursor.Close()
 
 	if !cursor.HasMore() {
 		return nil, nil
 	}
 
-	account := new(models.Account)
+	account := models.NewAccount()
 	meta, err := cursor.ReadDocument(nil, &account.Payload)
 	if err != nil {
 		return nil, err
 	}
 
-	account.ID = meta.Key
+	account.Key = meta.Key
 
 	if cursor.HasMore() {
 		log.Printf("ERROR: found multiple accounts with email %s, will use first one\n", email)
+	}
+
+	bindings = bindingVariables{
+		"from": account.GetID().String(),
+	}
+
+	query = "FOR edge IN has FILTER edge._from == @from RETURN edge"
+	cursor, err = database.Query(nil, query, bindings)
+	if err != nil {
+		return nil, err
+	}
+
+	var edgeDocument driver.EdgeDocument
+	for cursor.HasMore() {
+		_, err = cursor.ReadDocument(nil, &edgeDocument)
+		if err != nil {
+			return nil, err
+		}
+		account.ProfileKeys = append(account.ProfileKeys, edgeDocument.To.Key())
 	}
 
 	return account, nil

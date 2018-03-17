@@ -15,6 +15,11 @@ import (
 
 var secret = []byte("OSR6eqMv7N01PlPFZyBS1k508daeP8hC15dwRQ5pzr7hwsIOcAWQuhdZlGUKHIQw")
 
+type claims struct {
+	Email string `json:"email"`
+	jwt.StandardClaims
+}
+
 // CreateAccountHandler handles account create requests
 func CreateAccountHandler(response http.ResponseWriter, request *http.Request) {
 	account, err := models.ExtractAccountFromRequest(request)
@@ -96,10 +101,14 @@ func LoginHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.StandardClaims{
-		ExpiresAt: 60000,
-		Id:        accountFromDb.Payload.Email,
-	})
+	claims := claims{
+		Email: accountFromDb.Payload.Email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: 60000,
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 
 	tokenString, err := token.SignedString(secret)
 	if err != nil {

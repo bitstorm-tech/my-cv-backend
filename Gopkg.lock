@@ -19,6 +19,12 @@
   revision = "c899a2a2271f97f297fd70afd031e5ffb9497f83"
 
 [[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
+
+[[projects]]
   name = "github.com/gorilla/context"
   packages = ["."]
   revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
@@ -39,6 +45,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9f8662a05e91fd368b75c4ba7f5a864a9356d151ec1f16ac745b05c3c63c9333"
+  inputs-digest = "2529c5162b321615609e1c458e98d01c20e0ef0ae1c4d8ca9373cb7411de889f"
   solver-name = "gps-cdcl"
   solver-version = 1

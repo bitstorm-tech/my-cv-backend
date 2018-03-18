@@ -25,17 +25,7 @@ func UpsertProfile(profile *models.Profile) (*models.Profile, error) {
 		return nil, err
 	}
 
-	edges, err := getArangoEdgeCollection("has")
-	if err != nil {
-		return nil, err
-	}
-
-	edgeDocument := driver.EdgeDocument{
-		From: driver.NewDocumentID("accounts", profile.AccountKey),
-		To:   profile.GetID(),
-	}
-
-	_, err = edges.CreateDocument(nil, edgeDocument)
+	err = createEdge(driver.NewDocumentID("accounts", profile.AccountKey), profile.GetID(), "has")
 	if err != nil {
 		return nil, err
 	}

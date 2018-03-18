@@ -21,14 +21,14 @@ func UpsertProfileHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	profile, err = persistence.UpsertProfile(profile)
+	upsertedProfile, err := persistence.UpsertProfile(profile)
 	if err != nil {
 		log.Printf("ERROR: Can't upsert profile: %v\n%v\n", profile, err)
 		http.Error(response, "Error wile upserting profile", 500)
 		return
 	}
 
-	json, err := profile.ToJSON()
+	json, err := upsertedProfile.ToJSON()
 	if err != nil {
 		log.Printf("ERROR: Can't convert profile=%v to JSON\n%v\n", profile, err)
 		http.Error(response, "Error while create JSON", 500)

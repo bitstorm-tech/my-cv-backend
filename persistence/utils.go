@@ -1,6 +1,7 @@
 package persistence
 
 import (
+	"fmt"
 	"log"
 
 	driver "github.com/arangodb/go-driver"
@@ -112,4 +113,36 @@ func getArangoEdgeCollection(name string) (driver.Collection, error) {
 	}
 
 	return arangoEdgeCollections[name], nil
+}
+
+func createEdge(from driver.DocumentID, to driver.DocumentID, collection string) error {
+	database, err := getArangoDatabase()
+	if err != nil {
+		return err
+	}
+
+	bindingVariables := bindingVariables{
+		// "collection": []byte(collection),
+		"from": from.String(),
+		"to":   to.String(),
+	}
+
+	query := fmt.Sprintf("FOR edge IN %s FILTER edge._from == @from && edge._to == @to RETURN edge", collection)
+
+	cursor, err := database.Query(nil, query, bindingVariables)
+	if err != nil {
+		return err
+	}
+
+	if cursor.HasMore() {
+		return nil
+	}
+
+	query = fmt.Sprintf("INSERT { _from: @from, _to: @to } IN %s", collection)
+	_, err = database.Query(nil, query, bindingVariables)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -42,3 +42,27 @@ func UpsertProfile(profile *models.Profile) (*models.Profile, error) {
 
 	return profile, nil
 }
+
+// GetProfilesByAccount returns all profiles that are linked to an account.
+func GetProfilesByAccount(account models.Account) ([]models.Profile, error) {
+	collection, err := getArangoCollection("profiles")
+	if err != nil {
+		return nil, err
+	}
+
+	profiles := []models.Profile{}
+	var profile models.Profile
+
+	for _, key := range account.ProfileKeys {
+		meta, err := collection.ReadDocument(nil, key, &profile.Payload)
+		if err != nil {
+			return nil, err
+		}
+		profile.AccountKey = account.Key
+		profile.Key = meta.Key
+
+		profiles = append(profiles, profile)
+	}
+
+	return profiles, nil
+}

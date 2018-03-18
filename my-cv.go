@@ -15,6 +15,7 @@ func main() {
 	router.HandleFunc("/accounts", resources.CreateAccountHandler).Methods("PUT")
 	router.HandleFunc("/accounts/{email}", resources.GetAccountHandler).Methods("GET")
 	router.HandleFunc("/profiles", resources.UpsertProfileHandler).Methods("PUT")
+	router.HandleFunc("/profiles/{email}", resources.GetAllProfilesHandler).Methods("GET")
 	router.HandleFunc("/login", resources.LoginHandler).Methods("POST")
 	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "PUT", "HEAD", "DELETE"})
 	allowedHeaders := handlers.AllowedHeaders([]string{"x-requested-with", "authorization", "content-type"})

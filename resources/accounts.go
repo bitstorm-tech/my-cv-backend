@@ -46,8 +46,7 @@ func CreateAccountHandler(response http.ResponseWriter, request *http.Request) {
 
 // GetAccountHandler handles get requests for accounts
 func GetAccountHandler(response http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-	email := vars["email"]
+	email := mux.Vars(request)["email"]
 	account, err := persistence.GetAccountByEmail(email)
 	if err != nil {
 		log.Printf("ERROR: Can't get account with email=%s from database: %v\n", email, err)

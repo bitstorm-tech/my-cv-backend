@@ -56,3 +56,27 @@ func GetProfilesByAccount(account models.Account) ([]models.Profile, error) {
 
 	return profiles, nil
 }
+
+// DeleteProfile deletes the profile with the given key
+func DeleteProfile(key string) error {
+	collection, err := getArangoCollection("profiles")
+	if err != nil {
+		return err
+	}
+
+	_, err = collection.RemoveDocument(nil, key)
+	if err != nil {
+		return err
+	}
+
+	bindingVariables := bindingVariables{
+		"to": "profiles/" + key,
+	}
+	query := "FOR edge IN has FILTER edge._to == @to REMOVE edge IN has"
+	_, err = collection.Database().Query(nil, query, bindingVariables)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -65,3 +65,17 @@ func GetAllProfilesHandler(response http.ResponseWriter, request *http.Request) 
 
 	response.Write(json)
 }
+
+// DeleteProfileHandler deletes the profile with the key that must be specified in
+// the URL (e.g. /profiles/890234).
+func DeleteProfileHandler(response http.ResponseWriter, request *http.Request) {
+	key := mux.Vars(request)["key"]
+	err := persistence.DeleteProfile(key)
+	if err != nil {
+		log.Printf("ERROR: Can't delete profile with key=%s\n%v\n", key, err)
+		http.Error(response, "Error while deleting profile", 500)
+		return
+	}
+
+	response.WriteHeader(200)
+}

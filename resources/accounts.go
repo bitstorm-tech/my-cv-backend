@@ -66,7 +66,7 @@ func GetAccountHandler(response http.ResponseWriter, request *http.Request) {
 	response.Write(json)
 }
 
-// LoginHandler handles login requests. If the login is successfull, it will
+// LoginHandler handles login requests. If the login is successful, it will
 // respond with a JWT.
 func LoginHandler(response http.ResponseWriter, request *http.Request) {
 	account, err := models.ExtractAccountFromRequest(request)
